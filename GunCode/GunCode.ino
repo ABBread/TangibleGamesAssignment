@@ -31,9 +31,9 @@ void loop() {
   if(digitalRead(8) == 1){
     digitalWrite(7, HIGH);
   }
-  else(
+  else{
     digitalWrite(7, LOW);
-  )
+  }
 
   /* LOGIC, IT MIGHT WORK
   if(digitalRead(8) == 1){
