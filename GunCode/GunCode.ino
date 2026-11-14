@@ -1,6 +1,7 @@
 
 enum gunStates{
   STATE_IDLE,
+  STATE_READY,
   STATE_FIRING,
   
 }; //states for the gun. Currently very minimal, but will make expansion of functionality easier once we have a full game.
@@ -38,14 +39,15 @@ void setup() {
 void loop() {
   Serial.println(ammo);
 
-  if(digitalRead(8) == 1){
-    activeState = STATE_FIRING;
-  } //checking if the button has been pressed, and changing to the firing state.
-  
-  else{
-    activeState = STATE_IDLE;
-  } //If the button is not pressed, changing to the idle state.
-
+  if(activeState != STATE_FIRING){
+    if(digitalRead(8) == 1){
+      activeState = STATE_READY;
+    } //checking if the button has been pressed, and changing to the firing state.
+    
+    else{ 
+      activeState = STATE_IDLE;
+    } //If the button is not pressed, changing to the idle state.
+  }
 
   switch (activeState){
 
@@ -55,7 +57,8 @@ void loop() {
       digitalWrite(7, LOW); //pushing LOW to the signal laser pin, turning it off.
       break;
     
-    case STATE_FIRING:
+    case STATE_READY:
+      digitalWrite(7, LOW); //pushing LOW to the signal laser pin, turning it off.
 
       if(!delayStarted){
         delayStartTime = millis();
@@ -70,20 +73,21 @@ void loop() {
             shotStartTime = millis(); //we register the start time of the shot as the current time as this code line runs.
             ammo -= 1; //taking away one shot from the ammo.
             shotFired = true; //setting shot fired to true. This way, the above line only run once per button press/ firing state.
-          }
-
-          else{
-
-            if (millis() < (shotStartTime + shotTime)){ //checking if the current time (millis) has surpassed the start time plus the time the shot should take, if not...
-              digitalWrite(7, HIGH); //send HIGH to the laser signal pin, engaging the laser.
-            }
-
-            else{ //if the shot time is surpassed...
-              digitalWrite(7, LOW); //send LOW to the laser signal pin, disengaging the laser.
-            }
-
+            activeState = STATE_FIRING;
           }
         }
+      }
+      break;
+    
+    case STATE_FIRING:
+      if (millis() > (shotStartTime + shotTime)){ //checking if the current time (millis) has surpassed the start time plus the time the shot should take
+        digitalWrite(7, LOW);
+        if(digitalRead(8) == 0){
+          activeState = STATE_IDLE;
+        }
+      }
+      else{
+        digitalWrite(7, HIGH);
       }
       break;
     
