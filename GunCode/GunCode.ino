@@ -11,7 +11,7 @@ gunStates activeState = STATE_IDLE;
 int ammo = 10;
 
 unsigned long startTime;
-unsigned long shotTime = 100;
+unsigned long shotTime = 500;
 
 bool shotFired = false;
 
@@ -25,33 +25,26 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
-  Serial.println(digitalRead(8));
-
-  if(digitalRead(8) == 1){
-    digitalWrite(7, HIGH);
-  }
-  else{
-    digitalWrite(7, LOW);
-  }
-
-  /* LOGIC, IT MIGHT WORK
+  
+  Serial.println(startTime);
+  
   if(digitalRead(8) == 1){
     activeState = STATE_FIRING;
   }
   else{
     activeState = STATE_IDLE;
   }
-
-  if(activeState = STATE_FIRING){
-    if(ammo > 0){
+  
+  if(activeState == STATE_FIRING){
+    if(ammo >= 0){
       if(!shotFired)
       {
         startTime = millis();
+        ammo -= 1;
         shotFired = true;
       }
       else{
-        if (millis < startTime + shotTime){
+        if (millis() < (startTime + shotTime)){
           digitalWrite(7, HIGH);
         }
         else{
@@ -62,6 +55,6 @@ void loop() {
   }
   else{
     shotFired = false;
+    digitalWrite(7, LOW);
   }
-  */
 }
