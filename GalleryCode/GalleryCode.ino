@@ -23,13 +23,15 @@ void setup() {
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
 
-  targetServo1.write(180);
-  targetServo2.write(180);
+  targetServo1.write(90);
+  targetServo2.write(90);
 }
 
 
 
 void loop() {
+  Serial.println(LDR1value);
+
   LDR1value = analogRead(A0);
   LDR2value = analogRead(A1);
 
@@ -44,7 +46,7 @@ void standeeManagement(int LDRvalue, Servo targetServo, bool& servoFlippedDown, 
   if (LDRvalue >= 900){
     if (!servoFlippedDown){
       timerStart = millis();
-      targetServo.write(90);
+      targetServo.write(180);
       timerDuration = random(5000);
       servoFlippedDown = true;
     }
@@ -52,7 +54,7 @@ void standeeManagement(int LDRvalue, Servo targetServo, bool& servoFlippedDown, 
   }
 
   if ((timerStart + timerDuration)<= millis()){
-    targetServo.write(180);
+    targetServo.write(90);
     servoFlippedDown = false;
   }
 
